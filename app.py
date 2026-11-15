@@ -37,7 +37,7 @@ async def proxy(path: str, request: Request):
     if request.url.query:
         url += f"?{request.url.query}"
     body = await request.body()
-    headers = {"User-Agent": UA, "Content-Type": "application/json"}
+    headers = {"User-Agent": UA, "Content-Type": "application/json", "Accept-Encoding": "identity"}
     auth = request.headers.get("authorization")
     if auth:
         headers["Authorization"] = auth
@@ -57,7 +57,7 @@ async def proxy(path: str, request: Request):
 
     async def stream():
         try:
-            async for chunk in upstream_resp.aiter_raw():
+            async for chunk in upstream_resp.aiter_bytes():
                 yield chunk
         finally:
             await upstream_resp.aclose()
